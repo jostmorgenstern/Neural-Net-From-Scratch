@@ -30,7 +30,6 @@ def main():
         SigmoidLayer()
     ]
     net = NeuralNet(layers)
-    loss_func = SquaredError()
 
     np.seterr(over='ignore')
     train(

@@ -39,14 +39,13 @@ def test(
     input_converter: Callable,
     output_converter: Callable,
     label_converter: Callable,
-    loss: Loss = SquaredError(),
     title=''
 ) -> ModelEvaluator:
     evaluator = ModelEvaluator(confusion_matrix, title=title)
     pbar = tqdm(total=len(labels))
     for input, label in zip(inputs, labels):
         output = net.predict(input_converter(input))
-        evaluator.receive(output_converter(output), label, loss.loss(output, label_converter(label)))
+        evaluator.receive(output_converter(output), label, net.loss.loss_func(output, label_converter(label)))
         pbar.update()
         pbar.set_description(desc=f"Testing model")
     return evaluator

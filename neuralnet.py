@@ -3,9 +3,24 @@ from layers import LinearLayer
 from mathtypes import Vector, Tensor
 import numpy as np
 
+class Loss():
+    def loss_func(self, predicted: Vector, actual: Vector) -> Vector:
+        raise NotImplementedError
+
+    def grad_func(self, predicted: Vector, actual: Vector) -> Vector:
+        raise NotImplementedError
+
+class SquaredError(Loss):
+    def loss_func(self, predicted: Vector, actual: Vector) -> Vector:
+        return np.sum((predicted - actual) ** 2)
+
+    def grad_func(self, predicted: Vector, actual: Vector) -> Vector:
+        return 2 * (predicted - actual) 
+
 class NeuralNet:
-    def __init__(self, layers):
+    def __init__(self, layers: List, loss: Loss = SquaredError()):
         self.layers = layers
+        self.loss = loss
 
     def predict(self, input: Tensor) -> Tensor:
         for layer in self.layers:
@@ -23,17 +38,3 @@ class NeuralNet:
     def gradient_step(self, learning_rate: int):
         for layer in self.gradient_layers():
             layer.gradient_step(learning_rate)
-
-class Loss():
-    def loss(self, predicted: Vector, actual: Vector) -> Vector:
-        raise NotImplementedError
-
-    def grad(self, predicted: Vector, actual: Vector) -> Vector:
-        raise NotImplementedError
-
-class SquaredError(Loss):
-    def loss(self, predicted: Vector, actual: Vector) -> Vector:
-        return np.sum((predicted - actual) ** 2)
-
-    def grad(self, predicted: Vector, actual: Vector) -> Vector:
-        return 2 * (predicted - actual)

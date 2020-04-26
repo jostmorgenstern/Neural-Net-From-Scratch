@@ -23,7 +23,6 @@ def train(
     train_labels: np.ndarray, 
     input_converter: Callable,
     label_converter: Callable,
-    loss_func: Loss = SquaredError(),
     epoch_count: int = 5000,
     batch_size: int = 32,
     learning_rate: int = 0.1):
@@ -37,10 +36,10 @@ def train(
             vector_input = input_converter(input)
             vector_label = label_converter(label)
             output = net.predict(vector_input)
-            epoch_loss += loss_func.loss(output, vector_label)
-            grad = loss_func.grad(output, vector_label)
+            epoch_loss += net.loss.loss_func(output, vector_label)
+            grad = net.loss.grad_func(output, vector_label)
             net.backward(grad)
             net.gradient_step(learning_rate / batch_size)
         pbar.update()
-        pbar.set_description(desc=f"Current epoch loss: {round(epoch_loss, 2)}")
+        pbar.set_description(desc=f"Training model. Current epoch loss: {round(epoch_loss, 2)}")
 
