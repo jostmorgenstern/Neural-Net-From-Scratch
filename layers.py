@@ -26,6 +26,13 @@ class LinearLayer(Layer):
     def __repr__(self):
         return f"<LinearLayer {self.W.shape}>"
 
+    def has_params(self):
+        return True
+
+    def gradient_step(self, learning_rate: int):
+        self.W -= learning_rate * self.W_grad
+        self.b -= learning_rate * self.b_grad
+
 class ConvLayer(Layer):
     def __init__(filter_count: int, filter_height: int, filter_width: int, weight_init: Callable[[int, int, int], Tensor]):
         self.filters = weight_init((filter_count, filter_height, filter_width))
@@ -40,6 +47,9 @@ class ActivationLayer(Layer):
 
     def backward(self, grad: Tensor) -> Tensor:
         return grad * self.derivative_f(self.input)
+
+    def has_params(self):
+        return False
 
 class SigmoidLayer(ActivationLayer):
     def __repr__(self):

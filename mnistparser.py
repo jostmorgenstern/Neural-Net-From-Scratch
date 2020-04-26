@@ -17,6 +17,8 @@ def parse_images(file_path):
         current_row = 0
         current_col = 0
 
+        filename = file_path.split("/")[-1]
+        pbar = tqdm(total=image_count, desc= f"Parsing file {filename}")
         while current_img < image_count:
             num = get_number(f.read(1))
             images[current_img, current_row, current_col] = num
@@ -25,6 +27,8 @@ def parse_images(file_path):
                 current_img += 1
                 current_row = 0
                 current_col = 0
+                pbar.update()
+
             elif current_col == cols - 1:
                 current_row += 1
                 current_col = 0
@@ -40,10 +44,14 @@ def parse_labels(file_path):
         labels = np.zeros((label_count))
         current_label = 0
 
+        filename = file_path.split("/")[-1]
+        pbar = tqdm(total=label_count, desc= f"Parsing file {filename}")
+
         while current_label < label_count:
             num = get_number(f.read(1))
             labels[current_label] = num
             current_label += 1
+            pbar.update()
 
         return labels
 
@@ -94,7 +102,8 @@ def download_file(url, file_path):
     chunkSize = 1024
     r = requests.get(url, stream=True)
     with open(file_path, 'wb') as f:
-        pbar = tqdm( unit="B", total=int( r.headers['Content-Length']))
+        filename = url.split("/")[-1]
+        pbar = tqdm( unit="B", total=int( r.headers['Content-Length']), desc= f"Downloading file {filename}")
         for chunk in r.iter_content(chunk_size=chunkSize): 
             if chunk: # filter out keep-alive new chunks
                 pbar.update (len(chunk))

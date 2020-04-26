@@ -17,14 +17,12 @@ class NeuralNet:
             grad = layer.backward(grad)
         return grad
 
-class MLP(NeuralNet):    
-    def linear_layers(self) -> List:
-        return [layer for layer in self.layers if isinstance(layer, LinearLayer)]
+    def gradient_layers(self) -> List:
+        return [layer for layer in self.layers if layer.has_params()]
 
     def gradient_step(self, learning_rate: int):
-        for layer in self.linear_layers():
-            layer.W -= learning_rate * layer.W_grad
-            layer.b -= learning_rate * layer.b_grad
+        for layer in self.gradient_layers():
+            layer.gradient_step(learning_rate)
 
 class Loss():
     def loss(self, predicted: Vector, actual: Vector) -> Vector:
