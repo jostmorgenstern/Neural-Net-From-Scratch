@@ -1,6 +1,7 @@
 import typing, numpy as np, pandas as pd, seaborn as sn, matplotlib.pyplot as plt
 
 class ModelEvaluator:
+    """useful for testing models by plotting a confusion matrix and showing the total loss"""
     def __init__(self, classes: list, title=""):
         """axis 0 is predicted, axis 1 is actual"""
         self.confusion_matrix = pd.DataFrame(np.zeros((len(classes), len(classes))), classes, classes)
@@ -15,10 +16,12 @@ class ModelEvaluator:
         sn.set(font_scale=1.4)
         heatmap = sn.heatmap(self.confusion_matrix, annot=True, annot_kws={"size": 16})
         heatmap.set(xlabel='actual', ylabel='predicted')
+        heatmap_as_numpy = self.confusion_matrix.to_numpy()
         heatmap.set_title(
             f"{self.title} \n" +
-            f"total loss: {self.total_loss} \n"
-        )   
+            f"total loss: {self.total_loss} \n" +
+            f"Correct: {np.trace(heatmap_as_numpy)} / {np.sum(heatmap_as_numpy)}"
+        )
         if path is None:
             plt.show()
         else:

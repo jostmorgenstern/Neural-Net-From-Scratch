@@ -1,7 +1,6 @@
-import numpy as np, loss
-from FFN import MLP
+import numpy as np
+from neuralnet import Loss, SquaredError, NeuralNet
 from typing import Callable
-from modelevaluator import ModelEvaluator
 
 def BatchIterator(inputs: np.ndarray, labels: np.ndarray, batch_size: int):
     indices = np.arange(0, len(inputs))        
@@ -18,12 +17,12 @@ def BatchIterator(inputs: np.ndarray, labels: np.ndarray, batch_size: int):
             yield zip(inputs[slice], labels[slice])
 
 def train(
-    net: MLP,
+    net: NeuralNet,
     train_inputs: np.ndarray,
     train_labels: np.ndarray, 
     input_converter: Callable,
     label_converter: Callable,
-    loss_func: loss.Loss = loss.MSE(),
+    loss_func: Loss = SquaredError(),
     epoch_count: int = 5000,
     batch_size: int = 32,
     learning_rate: int = 0.1):
@@ -41,5 +40,4 @@ def train(
             net.backward(grad)
             net.gradient_step(learning_rate / batch_size)
         print(f"epoch: {epoch}, loss: {epoch_loss}")
-    
 
