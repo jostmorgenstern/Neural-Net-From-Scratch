@@ -1,6 +1,7 @@
 from typing import Callable, Tuple
 from mathtypes import Vector, Matrix, Tensor
 import numpy as np
+from scipy.ndimage import correlate
 
 class Layer:
     def forward(input):
@@ -34,13 +35,32 @@ class LinearLayer(Layer):
         self.b -= learning_rate * self.b_grad
 
 class ConvLayer(Layer):
-    def __init__(filter_count: int, filter_height: int, filter_width: int, weight_init: Callable[[int, int, int], Tensor]):
-        self.filters = weight_init((filter_count, filter_height, filter_width))
+    def __init__(self, filter_count: int, channel_count: int, filter_height: int, filter_width: int, weight_init: Callable[[Tuple[int, ...]], Tensor]):
+        self.filters = weight_init((filter_count, channel_count, filter_height, filter_width))
 
-    def forward(input: Tensor) -> Tensor:   
-        pass
+    def forward(self, input: Tensor) -> Tensor:
+        self.input = input   
+        return self.convolve_all(input, self.filters)
 
-class ActivationLayer(Layer): 
+    
+    def convolve_all(self, feature_maps, kernels):
+        return np.array([self.convolve_single_map(feature_map, kernel) for kernel in kernels for feature_map in feature_maps])
+
+    def convolve_single(self, feature_map, kernel):
+        return sum([correlate(image_channel, kernel_channel) for image_channel, kernel_channel in zip(feature_map, kernel)])
+    
+    def backward(self, grad: Tensor) -> Tensor:
+
+    
+    
+    def has_params(self):
+        return True
+    
+    def __repr__(self):
+        return f"<ConvLayer {self.filters.shape}>"
+
+class ActivationLayer(Layer):
+    """ template for subclasses """
     def forward(self, input: Tensor) -> Tensor:
         self.input = input
         return self.f(input)

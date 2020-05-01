@@ -32,9 +32,9 @@ class NeuralNet:
             grad = layer.backward(grad)
         return grad
 
-    def gradient_layers(self) -> List:
+    def param_layers(self) -> List:
         return [layer for layer in self.layers if layer.has_params()]
 
     def gradient_step(self, learning_rate: int):
-        for layer in self.gradient_layers():
+        for layer in self.param_layers():
             layer.gradient_step(learning_rate)
